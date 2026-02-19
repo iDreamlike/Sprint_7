@@ -3,11 +3,14 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
+import jdk.jfr.Description;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CourierCreateTests {
     @BeforeEach
@@ -37,25 +40,14 @@ public class CourierCreateTests {
 
     }
 
-    @Test
-    void courierCreate() {
-        given()
-                .header("Content-type", "application/json")
-                .body("{\"login\": \"RandomUser123\", \"password\": \"1234\", \"firstName\": \"Вася\"}")
-        .when()
-                .post("/api/v1/courier")
-        .then()
-                .assertThat().statusCode(201);
-    }
-
     @AfterEach
     void tearDown() {
         Response loginResponse =
-            given()
-                .header("Content-type", "application/json")
-                .body("{\"login\": \"RandomUser123\", \"password\": \"1234\"}")
-            .when()
-                .post("/api/v1/courier/login");
+                given()
+                        .header("Content-type", "application/json")
+                        .body("{\"login\": \"RandomUser123\", \"password\": \"1234\"}")
+                        .when()
+                        .post("/api/v1/courier/login");
         if (loginResponse.statusCode() == 200) {
             int courierId = loginResponse.jsonPath().getInt("id");
             given()
@@ -66,4 +58,74 @@ public class CourierCreateTests {
             System.out.println("Логин не удался. Код: " + loginResponse.statusCode());
         }
     }
+
+    @Test
+    @Description("Создание курьера")
+    void courierCreateTest() {
+        Response createResponse =
+            given()
+                    .header("Content-type", "application/json")
+                    .body("{\"login\": \"RandomUser123\", \"password\": \"1234\", \"firstName\": \"Вася\"}")
+            .when()
+                    .post("/api/v1/courier");
+        createResponse.then().assertThat().statusCode(201);
+        boolean ok = createResponse.jsonPath().getBoolean("ok");
+        assertTrue(ok, "Запрос не успешен");
+    }
+
+    @Test
+    @Description("Попытка создания уже существующего курьера")
+    void courierCreateAlreadyExistsTest() {
+        given()
+                .header("Content-type", "application/json")
+                .body("{\"login\": \"RandomUser123\", \"password\": \"1234\", \"firstName\": \"Вася\"}")
+                .when()
+                .post("/api/v1/courier");
+        Response createResponse =
+            given()
+                    .header("Content-type", "application/json")
+                    .body("{\"login\": \"RandomUser123\", \"password\": \"1234\", \"firstName\": \"Вася\"}")
+                    .when()
+                    .post("/api/v1/courier");
+        createResponse.then().assertThat().statusCode(409);
+        String errorText = createResponse.jsonPath().getString("message");
+        assertEquals("Этот логин уже используется. Попробуйте другой.", errorText);
+    }
+
+    @Test
+    @Description("Попытка создания курьера без обязательных полей login и password")
+    void courierCreateWithoutLoginAndPasswordTest() {
+        given()
+                .header("Content-type", "application/json")
+                .body("{\"firstName\": \"Вася\"}")
+                .when()
+                .post("/api/v1/courier")
+                .then()
+                .assertThat().statusCode(400);
+    }
+
+    @Test
+    @Description("Попытка создания курьера без обязательного поля login")
+    void courierCreateWithoutLoginTest() {
+        given()
+                .header("Content-type", "application/json")
+                .body("{\"password\": \"1234\", \"firstName\": \"Вася\"}")
+                .when()
+                .post("/api/v1/courier")
+                .then()
+                .assertThat().statusCode(400);
+    }
+
+    @Test
+    @Description("Попытка создания курьера без обязательного поля password")
+    void courierCreateWithoutPasswordTest() {
+        given()
+                .header("Content-type", "application/json")
+                .body("{\"login\": \"RandomUser123\", \"firstName\": \"Вася\"}")
+                .when()
+                .post("/api/v1/courier")
+                .then()
+                .assertThat().statusCode(400);
+    }
+
 }
