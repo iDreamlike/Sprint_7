@@ -6,7 +6,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 
-public class Configs {
+public class RestAssuredConfig {
     public static void configRestAssured() {
         RestAssured.filters((request, response, ctx) -> {
             System.out.println("\n" + "⏺".repeat(40));
