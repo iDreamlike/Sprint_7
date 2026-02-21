@@ -6,8 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.Requests;
 
+import static constants.ErrorMessages.*;
 import static config.RestAssuredConfig.configRestAssured;
-import static config.UrlConfig.*;
+import static constants.Urls.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,8 +47,7 @@ public class CourierCreateTests {
         requests.post(COURIER_ENDPOINT, courierJsonBody);
         response = requests.post(COURIER_ENDPOINT, courierJsonBody);
         response.then().assertThat().statusCode(409);
-        assertEquals("Этот логин уже используется. Попробуйте другой.",
-                response.jsonPath().getString("message"));
+        assertEquals(ERROR_COURIER_CREATE_DUPLICATE, response.jsonPath().getString("message"));
     }
 
     @Test
@@ -55,6 +55,7 @@ public class CourierCreateTests {
     void courierCreateWithoutLoginAndPasswordTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().login(null).password(null).build());
         response.then().assertThat().statusCode(400);
+        assertEquals(ERROR_COURIER_CREATE_NULL_CREDENTIALS, response.jsonPath().getString("message"));
     }
 
     @Test
@@ -62,6 +63,7 @@ public class CourierCreateTests {
     void courierCreateWithoutLoginTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().login(null).build());
         response.then().assertThat().statusCode(400);
+        assertEquals(ERROR_COURIER_CREATE_NULL_CREDENTIALS, response.jsonPath().getString("message"));
     }
 
     @Test
@@ -69,5 +71,6 @@ public class CourierCreateTests {
     void courierCreateWithoutPasswordTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().password(null).build());
         response.then().assertThat().statusCode(400);
+        assertEquals(ERROR_COURIER_CREATE_NULL_CREDENTIALS, response.jsonPath().getString("message"));
     }
 }
