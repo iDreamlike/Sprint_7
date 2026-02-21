@@ -29,7 +29,7 @@ public class CourierCreateTests {
 
     @AfterEach
     void tearDown() {
-        requests.delete(COURIER_ENDPOINT, courierJsonBody);
+        requests.delete(COURIER_ENDPOINT, courierJsonBody.toBuilder().firstName(null).build());
     }
 
     @Test
