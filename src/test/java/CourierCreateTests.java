@@ -1,8 +1,11 @@
-import dto.CourierLogin;
+import dto.CourierBodyDto;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Step;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
-import jdk.jfr.Description;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import util.Requests;
 
@@ -15,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CourierCreateTests {
     private Requests requests;
     private Response response;
-    private CourierLogin courierJsonBody = new CourierLogin();
+    private CourierBodyDto courierJsonBody = new CourierBodyDto();
+
 
     @BeforeEach
+    @Step("Создание тестовых данных. BeforeEach")
     void setUp() {
         requests = new Requests(APP_URL);
         configRestAssured();
@@ -29,12 +34,15 @@ public class CourierCreateTests {
     }
 
     @AfterEach
+    @Step("Удаление тестовых данных. AfterEach")
     void tearDown() {
         requests.delete(COURIER_ENDPOINT, courierJsonBody.toBuilder().firstName(null).build());
     }
 
     @Test
-    @Description("Создание курьера")
+    @Feature("Ручка Создания курьера")
+    @Story("Позитивные тесты")
+    @DisplayName("Создание курьера")
     void courierCreateTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody);
         response.then().assertThat().statusCode(201);
@@ -42,7 +50,9 @@ public class CourierCreateTests {
     }
 
     @Test
-    @Description("Попытка создания уже существующего курьера")
+    @Feature("Ручка Создания курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Попытка создания уже существующего курьера")
     void courierCreateAlreadyExistsTest() {
         requests.post(COURIER_ENDPOINT, courierJsonBody);
         response = requests.post(COURIER_ENDPOINT, courierJsonBody);
@@ -51,7 +61,9 @@ public class CourierCreateTests {
     }
 
     @Test
-    @Description("Попытка создания курьера без обязательных полей login и password")
+    @Feature("Ручка Создания курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Попытка создания курьера без обязательных полей login и password")
     void courierCreateWithoutLoginAndPasswordTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().login(null).password(null).build());
         response.then().assertThat().statusCode(400);
@@ -59,7 +71,9 @@ public class CourierCreateTests {
     }
 
     @Test
-    @Description("Попытка создания курьера без обязательного поля login")
+    @Feature("Ручка Создания курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Попытка создания курьера без обязательного поля login")
     void courierCreateWithoutLoginTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().login(null).build());
         response.then().assertThat().statusCode(400);
@@ -67,7 +81,9 @@ public class CourierCreateTests {
     }
 
     @Test
-    @Description("Попытка создания курьера без обязательного поля password")
+    @Feature("Ручка Создания курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Попытка создания курьера без обязательного поля password")
     void courierCreateWithoutPasswordTest() {
         response = requests.post(COURIER_ENDPOINT, courierJsonBody.toBuilder().password(null).build());
         response.then().assertThat().statusCode(400);

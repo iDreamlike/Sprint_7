@@ -1,7 +1,7 @@
 package dto;
 
 import lombok.*;
-import constants.Color;
+import constants.Colors;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class Orders {
+public class OrderBodyDto {
     private String firstName;
     private String lastName;
     private String address;
@@ -18,5 +18,5 @@ public class Orders {
     private Integer rentTime;
     private String deliveryDate;
     private String comment;
-    private List<Color> color;
+    private List<Colors> color;
 }

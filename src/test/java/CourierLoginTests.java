@@ -1,9 +1,9 @@
+import dto.CourierBodyDto;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Step;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
-import jdk.jfr.Description;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import util.Requests;
 
 import static constants.ErrorMessages.*;
@@ -15,9 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class CourierLoginTests {
     private Requests requests;
     private Response response;
-    private dto.CourierLogin courierJsonBody = new dto.CourierLogin();
+    private CourierBodyDto courierJsonBody = new CourierBodyDto();
 
     @BeforeEach
+    @Step("Создание тестовых данных. BeforeEach")
     void setUp() {
         requests = new Requests(APP_URL);
         configRestAssured();
@@ -29,12 +30,15 @@ public class CourierLoginTests {
     }
 
     @AfterEach
+    @Step("Удаление тестовых данных. AfterEach")
     void tearDown() {
         requests.delete(COURIER_ENDPOINT, courierJsonBody);
     }
 
     @Test
-    @Description("Логин курьера")
+    @Feature("Ручка Логина курьера")
+    @Story("Позитивные тесты")
+    @DisplayName("Логин курьера")
     void courierLoginTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody);
         response.then().assertThat().statusCode(200);
@@ -42,7 +46,9 @@ public class CourierLoginTests {
     }
 
     @Test
-    @Description("Логин курьера без поля Login")
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Логин курьера без поля Login")
     void courierLoginWithoutLoginTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder().login(null).build());
         response.then().assertThat().statusCode(400);
@@ -50,8 +56,10 @@ public class CourierLoginTests {
     }
 
     @Test
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
     @Disabled("Ждем фикса бага с пустым паролем")
-    @Description("Логин курьера без поля Password")
+    @DisplayName("Логин курьера без поля Password")
     void courierLoginWithoutPasswordTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder().password(null).build());
         response.then().assertThat().statusCode(400);
@@ -59,8 +67,10 @@ public class CourierLoginTests {
     }
 
     @Test
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
     @Disabled("Ждем фикса бага с пустым паролем")
-    @Description("Логин курьера без полей Login и Password")
+    @DisplayName("Логин курьера без полей Login и Password")
     void courierLoginWithoutLoginAndPasswordTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder().login(null).password(null).build());
         response.then().assertThat().statusCode(400);
@@ -68,7 +78,9 @@ public class CourierLoginTests {
     }
 
     @Test
-    @Description("Логин курьера с несуществующим Login")
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Логин курьера с несуществующим Login")
     void courierLoginWithNotExistsLoginTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder().login("Нет такого логина").build());
         response.then().assertThat().statusCode(404);
@@ -76,7 +88,9 @@ public class CourierLoginTests {
     }
 
     @Test
-    @Description("Логин курьера с несуществующим Password")
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Логин курьера с несуществующим Password")
     void courierLoginWithNotExistsPasswordTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder().password("Нет такого пароля").build());
         response.then().assertThat().statusCode(404);
@@ -84,7 +98,9 @@ public class CourierLoginTests {
     }
 
     @Test
-    @Description("Логин курьера с несуществующими Login и Password")
+    @Feature("Ручка Логина курьера")
+    @Story("Негативные тесты")
+    @DisplayName("Логин курьера с несуществующими Login и Password")
     void courierLoginWithNotExistsLoginAndPasswordTest() {
         response = requests.post(LOGIN_ENDPOINT , courierJsonBody.toBuilder()
                 .login("Нет такого логина")

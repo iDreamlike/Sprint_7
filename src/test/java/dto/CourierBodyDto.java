@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourierLogin {
+public class CourierBodyDto {
     private String login;
     private String password;
     private String firstName;

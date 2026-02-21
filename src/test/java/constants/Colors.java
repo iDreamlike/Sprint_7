@@ -1,6 +1,6 @@
 package constants;
 
-public enum Color {
+public enum Colors {
     BLACK,
     GREY
 }
